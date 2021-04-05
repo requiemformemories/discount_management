@@ -81,5 +81,26 @@ RSpec.describe Order, type: :model do
         it { is_expected.to be(10) }
       end
     end
+
+    context 'when there is a discount: $10 off for any order with 2 product#1' do
+      let!(:discount) do
+        create(:discount, scope: { product: { id: product1.id, quantity: 2 } },
+          rules: { amount: 10 })
+      end
+      let(:product1) { create(:product) }
+      let(:product2) { create(:product) }
+
+      context 'when order include 2 product#2' do
+        let!(:order_item) { create(:order_item, order: order, product: product2, quantity: 2) }
+
+        it { is_expected.to be(0) }
+      end
+
+      context 'when order include 2 product#1' do
+        let!(:order_item) { create(:order_item, order: order, product: product1, quantity: 2) }
+
+        it { is_expected.to be(10) }
+      end
+    end
   end
 end

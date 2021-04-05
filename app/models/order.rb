@@ -12,11 +12,18 @@ class Order < ApplicationRecord
         next if options['start_at'] && created_at < options['start_at']
         next if options['end_at'] && created_at > options['end_at']
         next if options['quantity'] && quantity < options['quantity']
-
-        true
-      when 'product', 'shop', 'user'
+      when 'product'
+        options = discount.scope['product']
+        order_item = order_items.find_by(product_id: options['id'])
+        next unless order_item
+        next if options['quantity'] && order_item.quantity < options['quantity']
+      when 'shop', 'user'
         raise 'not implement yet'
+      else
+        next
       end
+
+      true
     end
   end
 
