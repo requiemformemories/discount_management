@@ -42,6 +42,22 @@ RSpec.describe Order, type: :model do
       end
     end
 
+    context 'when there is a discount: $20 off for any order with two order items' do
+      let!(:discount) do
+        create(:discount, scope: { all: { quantity: 2 } },
+                     rules: { amount: 20 })
+      end
+
+      context 'when order quantity is 1' do
+        it { is_expected.to be(0) }
+      end
+
+      context 'when order quantity is 2' do
+        let(:quantity) { 2 }
+        it { is_expected.to be(20) }
+      end
+    end
+
     context 'when there is a discount: $10 off for any order on January 2021' do
       let!(:discount) do
         create(:discount, scope: { all: { start_at: Time.new(2021, 1, 1), end_at: Time.new(2021, 1, 31) } },
