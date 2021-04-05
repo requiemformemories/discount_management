@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe Order, type: :model do
+  it { is_expected.to have_many(:order_items) }
+
   subject(:order) { create(:order, amount: amount, created_at: created_at, quantity: quantity) }
   let(:amount) { 200 }
   let(:quantity) { 1 }

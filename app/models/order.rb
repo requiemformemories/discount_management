@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
+  has_many :order_items, dependent: :destroy
+
   def available_discounts
     Discount.all.filter do |discount|
       case discount.scope.keys[0] # now only one condition is available
