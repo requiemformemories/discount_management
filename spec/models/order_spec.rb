@@ -40,7 +40,7 @@ RSpec.describe Order, type: :model do
       end
 
       context 'when order amount is $200' do
-        it { is_expected.to be(20.0) }
+        it { is_expected.to be(20) }
       end
     end
 
@@ -79,6 +79,26 @@ RSpec.describe Order, type: :model do
       context 'when order is created at 2021-01-15' do
         let(:created_at) { Time.new(2021, 1, 15) }
         it { is_expected.to be(10) }
+      end
+
+      context 'when there is a rule: discount should not over $50' do
+        let!(:discount) do
+          create(:discount, scope: { all: { quantity: 2 } },
+                       rules: { percent: 50, total_amount_check: 50 })
+        end
+        let(:quantity) { 2 }
+
+        context 'when order discount is $20 before checking total amount' do
+          let(:amount) { 80 }
+
+          it { is_expected.to be(40) }
+        end
+
+        context 'when order discount is $100 before checking total amount' do
+          let(:amount) { 200 }
+
+          it { is_expected.to be(50) }
+        end
       end
     end
 

@@ -7,7 +7,7 @@ class DiscountCalculator
     end
 
     def calculate
-      @options if @options < current_value
+      return @options if @options < @current_value
 
       @current_value
     end
