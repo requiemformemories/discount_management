@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe OrderItem, type: :model do
   it { is_expected.to belong_to(:order) }
   it { is_expected.to belong_to(:product) }
+  it { is_expected.to belong_to(:shop) }
 
   describe 'update order after saved' do
     subject(:order) { create(:order, quantity: 0, amount: 0) }
