@@ -32,7 +32,7 @@ discount 包含三個面向：折扣條件、折扣規則
 - [x] 折扣可限定總共只套用 N 次
     - condition: `{ all: { times: N } }`
     - rule:
-- [ ] 折扣可限定總共優惠 Y 元
+- [x] 折扣可限定總共優惠 Y 元
     - condition: `{ all: { amount: Y } }`
     - rule: `{ total_amount: Y }`
     - 折扣 < Y - 現在總優惠金額

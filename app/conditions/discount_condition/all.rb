@@ -13,6 +13,7 @@ class DiscountCondition
       return false if @options['quantity'] && @order.quantity < @options['quantity']
       return false if @options['times'] && used_count >= @options['times']
       return false if @options['month_times'] && used_count(:month) >= @options['month_times']
+      return false if @options['total_amount_check'] && used_amount >= @options['total_amount_check']
 
       true
     end
@@ -21,6 +22,10 @@ class DiscountCondition
       where_clause = { created_at: Date.current.all_month } if type == :month
 
       @discount.discount_inventories.where(where_clause).count
+    end
+
+    def used_amount
+      @discount.discount_inventories.sum(&:amount)
     end
   end
 end

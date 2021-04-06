@@ -14,8 +14,7 @@ class Order < ApplicationRecord
     @discount = 0
 
     available_discounts.each do |discount|
-      @discount = discount.calculate(self, @discount)
-      discount.use(self)
+      @discount += discount.use(self)
     end
 
     @discount

@@ -81,26 +81,6 @@ RSpec.describe Order, type: :model do
         let(:created_at) { Time.new(2021, 1, 15) }
         it { is_expected.to be(10) }
       end
-
-      context 'when there is a rule: discount should not over $50' do
-        let!(:discount) do
-          create(:discount, scope: { all: { quantity: 2 } },
-                       rules: { percent: 50, total_amount_check: 50 })
-        end
-        let(:quantity) { 2 }
-
-        context 'when order discount is $20 before checking total amount' do
-          let(:amount) { 80 }
-
-          it { is_expected.to be(40) }
-        end
-
-        context 'when order discount is $100 before checking total amount' do
-          let(:amount) { 200 }
-
-          it { is_expected.to be(50) }
-        end
-      end
     end
 
     context 'when there is a discount: $10 off for any order with 2 product#1' do
@@ -209,10 +189,10 @@ RSpec.describe Order, type: :model do
       end
 
       context 'when the discount is used 1 time' do
-        let!(:order) do
-          order = create(:order)
-          order.calculate_discounts
-          order
+        let!(:other_order) do
+          other_order = create(:order)
+          other_order.calculate_discounts
+          other_order
         end
 
         it { is_expected.to be(0) }
@@ -230,21 +210,106 @@ RSpec.describe Order, type: :model do
       end
 
       context 'when the discount is used 1 time last month' do
-        let!(:order) do
-          order = create(:order, created_at: 1.month.ago)
-          order.calculate_discounts
-          order.discount_inventories.update_all(created_at: 1.month.ago)
-          order
+        let!(:other_order) do
+          other_order = create(:order, created_at: 1.month.ago)
+          other_order.calculate_discounts
+          other_order.discount_inventories.update_all(created_at: 1.month.ago)
+          other_order
         end
 
         it { is_expected.to be(10) }
       end
 
       context 'when the discount is used 1 time' do
-        let!(:order) do
-          order = create(:order)
-          order.calculate_discounts
-          order
+        let!(:other_order) do
+          other_order = create(:order)
+          other_order.calculate_discounts
+          other_order
+        end
+
+        it { is_expected.to be(0) }
+      end
+    end
+
+    context 'when there is a $100 off discount that can only discount $350 totally' do
+      let!(:discount) do
+        create(:discount, scope: { all: { total_amount_check: 350 } },
+          rules: { amount: { value: 100, total_amount_check: 350 } })
+      end
+      let(:product1) { create(:product, price: 200) }
+
+      context 'when other order use $100 already' do
+        let!(:other_order) do
+          other_order = create(:order)
+          create(:order_item, product: product1, quantity: 1)
+          other_order.calculate_discounts
+          other_order
+        end
+
+        it { is_expected.to be(100) }
+      end
+
+      context 'when other order use $300 already' do
+        before do
+          3.times do
+            other_order = create(:order)
+            create(:order_item, order: other_order, product: product1, quantity: 1)
+            other_order.calculate_discounts
+          end
+        end
+
+        it { is_expected.to be(50) }
+      end
+
+      context 'when other order use $350 already' do
+        before do
+          4.times do
+            other_order = create(:order)
+            create(:order_item, order: other_order, product: product1, quantity: 1)
+            other_order.calculate_discounts
+          end
+        end
+
+        it { is_expected.to be(0) }
+      end
+    end
+
+    context 'when there is a 50% off discount that can only discount $300 totally' do
+      let!(:discount) do
+        create(:discount, scope: { all: { total_amount_check: 300 } },
+          rules: { percent: { value: 50, total_amount_check: 300 } })
+      end
+      let(:product1) { create(:product, price: 200) }
+      let(:product2) { create(:product, price: 100) }
+
+      context 'when other order use $100 already' do
+        let!(:other_order) do
+          other_order = create(:order)
+          create(:order_item, order: other_order, product: product1, quantity: 1)
+          other_order.calculate_discounts
+          other_order
+        end
+
+        it { is_expected.to be(100) }
+      end
+
+      context 'when other order use $250 already' do
+        let!(:other_order) do
+          other_order = create(:order)
+          create(:order_item, order: other_order, product: product2, quantity: 5)
+          other_order.calculate_discounts
+          other_order
+        end
+
+        it { is_expected.to be(50) }
+      end
+
+      context 'when other order use $300 already' do
+        let!(:other_order) do
+          other_order = create(:order)
+          create(:order_item, order: other_order, product: product1, quantity: 3)
+          other_order.calculate_discounts
+          other_order
         end
 
         it { is_expected.to be(0) }

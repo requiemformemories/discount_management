@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :order do
-    amount { 200 }
-    quantity { 1 }
+    amount { 0 }
+    quantity { 0 }
   end
 end

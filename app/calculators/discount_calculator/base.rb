@@ -1,8 +1,9 @@
 class DiscountCalculator
   class Base
-    def initialize(order:, options:)
+    def initialize(order:, discount:)
       @order = order
-      @options = options
+      @discount = discount
+      @options = discount.rules[self.class.name.demodulize.underscore]
     end
 
     def calculate

@@ -1,20 +1,18 @@
 class DiscountCalculator
-  def initialize(order:, type: , options:, current_value: 0)
+  def initialize(order:, discount: )
     @order = order
-    @type = type
-    @options = options
-    @current_value = current_value
+    @discount = discount
+    @type = @discount.rules.keys[0]
+    @options = @discount[@type]
   end
 
   def calculate
-    # TODO: implement ate method of amount, percent, free_shopping, product, total_amount, user_total_amount
+    # TODO: implement calculate method of amount, percent, free_shopping, reward
     case @type
     when 'amount'
-      @current_value + DiscountCalculator::Amount.new(order: @order, options: @options).calculate
+      DiscountCalculator::Amount.new(order: @order, discount: @discount).calculate
     when 'percent'
-      @current_value + DiscountCalculator::Percent.new(order: @order, options: @options).calculate
-    when 'total_amount_check'
-      DiscountCalculator::TotalAmountCheck.new(order: @order, options: @options, current_value: @current_value).calculate
+      DiscountCalculator::Percent.new(order: @order, discount: @discount).calculate
     else
       0
     end
