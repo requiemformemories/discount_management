@@ -29,7 +29,7 @@ discount 包含三個面向：折扣條件、折扣規則
     - condition: `{ shop: { id: 1, quantity: X } }`
     - rule: `{ percent: { value: Z, product_id: 1 } }`
     - 有可能折 Z% 只折特定供應商場品，有可能是折全部商品，這邊先當成折特定供應商場品的情況
-- [ ] 折扣可限定總共只套用 N 次
+- [x] 折扣可限定總共只套用 N 次
     - condition: `{ all: { times: N } }`
     - rule:
 - [ ] 折扣可限定總共優惠 Y 元

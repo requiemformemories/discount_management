@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Order, type: :model do
   it { is_expected.to have_many(:order_items) }
+  it { is_expected.to have_many(:discount_inventories) }
 
   subject(:order) { create(:order, amount: amount, created_at: created_at, quantity: quantity) }
   let(:amount) { 200 }
@@ -194,6 +195,27 @@ RSpec.describe Order, type: :model do
         let!(:order_item2) { create(:order_item, order: order, product: product2, quantity: 2) }
 
         it { is_expected.to be(30) }
+      end
+    end
+
+    context 'when there is a $10 off discount that can only be used for 1 times' do
+      let!(:discount) do
+        create(:discount, scope: { all: { times: 1 } },
+          rules: { amount: 10 })
+      end
+
+      context 'when the discount is not used' do
+        it { is_expected.to be(10) }
+      end
+
+      context 'when the discount is used 1 time' do
+        let!(:order) do
+          order = create(:order)
+          order.calculate_discounts
+          order
+        end
+
+        it { is_expected.to be(0) }
       end
     end
   end

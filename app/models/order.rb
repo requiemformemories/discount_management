@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
+  has_many :discount_inventories, dependent: :destroy
   has_many :order_items, dependent: :destroy
 
   def available_discounts
@@ -14,6 +15,7 @@ class Order < ApplicationRecord
 
     available_discounts.each do |discount|
       @discount = discount.calculate(self, @discount)
+      discount.use(self)
     end
 
     @discount

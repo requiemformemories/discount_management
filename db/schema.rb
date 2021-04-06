@@ -10,10 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_06_073949) do
+ActiveRecord::Schema.define(version: 2021_04_06_133903) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "discount_inventories", force: :cascade do |t|
+    t.bigint "order_id"
+    t.bigint "discount_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["discount_id"], name: "index_discount_inventories_on_discount_id"
+    t.index ["order_id"], name: "index_discount_inventories_on_order_id"
+  end
 
   create_table "discounts", force: :cascade do |t|
     t.jsonb "scope", default: {}, null: false

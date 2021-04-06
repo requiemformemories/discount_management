@@ -9,7 +9,7 @@ class DiscountCondition
   def perform
     case @discount.scope.keys[0]
     when 'all'
-      DiscountCondition::All.new(order: @order, options: @discount.scope['all']).perform
+      DiscountCondition::All.new(order: @order, options: @discount.scope['all'], discount: @discount).perform
     when 'product'
       DiscountCondition::Product.new(order: @order, options: @discount.scope['product']).perform
     when 'shop'
