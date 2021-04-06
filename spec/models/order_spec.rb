@@ -218,5 +218,37 @@ RSpec.describe Order, type: :model do
         it { is_expected.to be(0) }
       end
     end
+
+    context 'when there is a $10 off discount that can only be used for 1 times in a month' do
+      let!(:discount) do
+        create(:discount, scope: { all: { month_times: 1 } },
+          rules: { amount: 10 })
+      end
+
+      context 'when the discount is not used' do
+        it { is_expected.to be(10) }
+      end
+
+      context 'when the discount is used 1 time last month' do
+        let!(:order) do
+          order = create(:order, created_at: 1.month.ago)
+          order.calculate_discounts
+          order.discount_inventories.update_all(created_at: 1.month.ago)
+          order
+        end
+
+        it { is_expected.to be(10) }
+      end
+
+      context 'when the discount is used 1 time' do
+        let!(:order) do
+          order = create(:order)
+          order.calculate_discounts
+          order
+        end
+
+        it { is_expected.to be(0) }
+      end
+    end
   end
 end

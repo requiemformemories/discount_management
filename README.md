@@ -50,7 +50,7 @@ discount 包含三個面向：折扣條件、折扣規則
     - condition: `{ all: { start_at: day1, end_at: day2 } }`
     - rule:
     - 描述裡面沒有提到折扣條件，應該算是單純的 condition
-- [ ] 每月重新計算使用數量限制
+- [x] 每月重新計算使用數量限制
     - condition: `{ all: { month_times: N } }`
     - rule:  折扣 < Y - 現在總優惠金額
 
