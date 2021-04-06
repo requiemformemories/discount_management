@@ -22,10 +22,10 @@ discount 包含三個面向：折扣條件、折扣規則
 - [ ] 訂單滿 X 贈送特定商品
     - condition: `{ all: { amount: X } }`
     - rule: `{ reward: 1 }`
-- [ ] 特定供應商場品滿 X 件折 Y 元
+- [x] 特定供應商場品滿 X 件折 Y 元
     - condition: `{ shop: { id: 1, quantity: X } }`
     - rule: `{ amount: Y }`
-- [ ] 特定供應商場品滿 X 件折 Z %
+- [x] 特定供應商場品滿 X 件折 Z %
     - condition: `{ shop: { id: 1, quantity: X } }`
     - rule: `{ percent: { value: Z, product_id: 1 } }`
     - 有可能折 Z% 只折特定供應商場品，有可能是折全部商品，這邊先當成折特定供應商場品的情況

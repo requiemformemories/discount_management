@@ -128,26 +128,72 @@ RSpec.describe Order, type: :model do
         create(:discount, scope: { product: { id: product1.id, quantity: 2 } },
           rules: { percent: { value: 10, product_id: product1.id} })
       end
-      let(:product1) { create(:product) }
-      let(:product2) { create(:product) }
+      let(:product1) { create(:product, price: 100) }
+      let(:product2) { create(:product, price: 150) }
 
       context 'when order include 2 product#2' do
-        let!(:order_item) { create(:order_item, order: order, product: product2, quantity: 2, amount: 300) }
+        let!(:order_item) { create(:order_item, order: order, product: product2, quantity: 2) }
 
         it { is_expected.to be(0) }
       end
 
       context 'when order include 2 product#1' do
-        let!(:order_item) { create(:order_item, order: order, product: product1, quantity: 2, amount: 200) }
+        let!(:order_item) { create(:order_item, order: order, product: product1, quantity: 2) }
 
         it { is_expected.to be(20) }
       end
 
       context 'when order include product#1 and product#2' do
-        let!(:order_item1) { create(:order_item, order: order, product: product1, quantity: 2, amount: 200) }
-        let!(:order_item2) { create(:order_item, order: order, product: product2, quantity: 2, amount: 300) }
+        let!(:order_item1) { create(:order_item, order: order, product: product1, quantity: 2) }
+        let!(:order_item2) { create(:order_item, order: order, product: product2, quantity: 2) }
 
         it { is_expected.to be(20) }
+      end
+    end
+
+    context 'when there is a discount: $10 off for any order with 3 products in shop#1' do
+      let!(:discount) do
+        create(:discount, scope: { shop: { id: product1.shop.id, quantity: 2 } },
+          rules: { amount: 10 })
+      end
+      let(:product1) { create(:product) }
+      let(:product2) { create(:product, shop: product1.shop) }
+      let(:product_from_other_shop) { create(:product) }
+
+      context 'when order include 3 product in other shop' do
+        let!(:order_item) { create(:order_item, order: order, product: product_from_other_shop, quantity: 3) }
+
+        it { is_expected.to be(0) }
+      end
+
+      context 'when order include 1 product#1 and 2 product#2' do
+        let!(:order_item1) { create(:order_item, order: order, product: product1, quantity: 1) }
+        let!(:order_item2) { create(:order_item, order: order, product: product2, quantity: 2) }
+
+        it { is_expected.to be(10) }
+      end
+    end
+
+    context 'when there is a discount: 10% off for any order with 3 products in shop#1' do
+      let!(:discount) do
+        create(:discount, scope: { shop: { id: product1.shop.id, quantity: 2 } },
+          rules: { percent: { value: 10, shop_id: product1.shop.id } })
+      end
+      let(:product1) { create(:product, price: 100) }
+      let(:product2) { create(:product, shop: product1.shop, price: 100) }
+      let(:product_from_other_shop) { create(:product) }
+
+      context 'when order include 3 product in other shop' do
+        let!(:order_item) { create(:order_item, order: order, product: product_from_other_shop, quantity: 3) }
+
+        it { is_expected.to be(0) }
+      end
+
+      context 'when order include 1 product#1 and 2 product#2' do
+        let!(:order_item1) { create(:order_item, order: order, product: product1, quantity: 1) }
+        let!(:order_item2) { create(:order_item, order: order, product: product2, quantity: 2) }
+
+        it { is_expected.to be(30) }
       end
     end
   end

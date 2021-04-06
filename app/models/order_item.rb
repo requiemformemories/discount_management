@@ -12,7 +12,7 @@ class OrderItem < ApplicationRecord
     return unless product && quantity
 
     self.shop_id = product.shop_id
-    self.amount ||= quantity * product.price
+    self.amount = quantity * product.price
   end
 
   def update_order
