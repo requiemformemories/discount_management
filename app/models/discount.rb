@@ -2,10 +2,10 @@
 
 class Discount < ApplicationRecord
   def calculate(order, discount = 0)
-    # TODO: implement caculate method of amount, percent, free_shopping, product, total_amount, user_total_amount
-    discount += rules['amount'] if rules['amount']
-    discount += rules['percent'] * order.amount * 0.01 if rules['percent']
-    discount = rules['total_amount_check'] if rules['total_amount_check'] && rules['total_amount_check'] < discount
+    rules.each do |type, options|
+      discount = DiscountCalculator.new(order: order, type: type, options: options, current_value: discount).calculate
+    end
+
     discount
   end
 end
